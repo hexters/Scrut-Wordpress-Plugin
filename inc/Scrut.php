@@ -117,7 +117,12 @@ class Scrut {
   }
 
   public function scrut_shortcode_listing( $atts ) {
-    require_once( SCRUT__PLUGIN_DIR . '/public/listing.php');
+    $data = new Setting();
+    if(!$data) {
+      echo '<h1>Scrut Api Key not found</h1>';
+    } else {
+      require_once( SCRUT__PLUGIN_DIR . '/public/listing.php');
+    }
   }
 
   public function redirect($url) {
