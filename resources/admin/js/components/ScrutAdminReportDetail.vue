@@ -1,7 +1,8 @@
 <template>
   <div>
-    <button @click="backPage()" style="float:right;" class="button">&larr; Back</button>
-    <h3 style="float:left;">Shassis No {{ $route.params.id }}</h3>
+    <button @click="backPage()" style="float:left;" class="button">&larr; Back</button>
+    <h3 style="float:left;margin-top:5px;margin-left:1em;">Shassis No {{ $route.params.id }}</h3>
+    
 
     <div v-for="(item, i) in results" :key="i" style="margin-top:1em;">
       <table class="wp-list-table widefat fixed striped posts">
@@ -11,9 +12,9 @@
               <td></td>
               <td rowspan="20">
                 <div style="max-height:650px;overflow:auto;text-align:center;">
-                  <div v-for="(img, index) in item.imgs" :key="index">
+                  <a :data-caption="item.result.lot_number" data-fancybox="scrut-gallery" v-for="(img, index) in item.imgs" :key="index" :href="img">
                     <img :src="img" width="250">
-                  </div>
+                  </a>
                 </div>
                 <br>
                 <p style="padding-left:20px;">* Scroll down to view all image</p>

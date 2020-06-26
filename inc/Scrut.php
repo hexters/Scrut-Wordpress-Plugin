@@ -47,10 +47,12 @@ class Scrut extends Ajax {
     add_filter( 'plugin_action_links_' . SCRUT__PLUGIN_PATH_NAME, [$this, 'filter_action_links'], 10, 1 );
     add_action( 'admin_menu', [$this, 'add_parent_menu']);
     add_action( 'admin_post_scrut-post-setting', [$this, 'setting_post_data'] );
-    add_shortcode( 'scrut_report', [$this, 'scrut_shortcode_listing'] );
+    add_shortcode( 'scrut_listing', [$this, 'scrut_shortcode_listing'] );
     add_action( 'admin_enqueue_scripts',  [$this, 'enqueue_assets_admin']);
     add_action( 'wp_enqueue_scripts', [$this, 'enqueue_assets_public'] );
     add_action( 'admin_bar_menu', [$this, 'admin_bar_menu'], 100);
+    add_action( 'admin_enqueue_scripts',  [$this, 'enqueue_fancyapps_plugin']);
+
     $this->register_ajax();
   }
 
@@ -121,6 +123,12 @@ class Scrut extends Ajax {
       'ajaxurl' => admin_url('admin-ajax.php')
     ] );
   }
+
+  public function enqueue_fancyapps_plugin() {
+    wp_enqueue_script( 'scrut_admin_fancyapps_script', plugins_url( 'admin/assets/plugin/fancyapps/jquery.fancybox.min.js', SCRUT__FILE ), [], 1, true );
+    wp_enqueue_style( 'scrut_admin_fancyapps_style', plugins_url( 'admin/assets/plugin/fancyapps/jquery.fancybox.min.css', SCRUT__FILE), [], 1, 'all' );
+    wp_localize_script( 'scrut_admin_fancyapps_script', 'facyapps', ['$(`[data-fancybox="scrut-gallery"]`).fancybox();'] );
+  }
   
   public function filter_action_links( $links ) {
     if( is_admin() ) {
@@ -173,7 +181,6 @@ class Scrut extends Ajax {
   }
 
   public function listing_view() {
-
     $data = $this->setting;
     if(is_null($data->email) || is_null($data->key)) {
       $_SESSION['error'] = 'Please completed this data below!';

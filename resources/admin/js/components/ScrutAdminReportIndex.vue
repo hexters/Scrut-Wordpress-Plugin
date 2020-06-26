@@ -30,7 +30,9 @@
               <input id="cb-select-1" type="checkbox" name="post[]" value="1">
             </th>
             <td class="username column-username has-row-actions column-primary">
-              <img :src="item.result[0].imgs[1]" class="avatar avatar-32 photo" width="32" height="32">
+              <a :href="item.result[0].imgs[1]" :data-caption="item.chassis_no" data-fancybox="scrut-gallery">
+                <img :src="item.result[0].imgs[1]" class="avatar avatar-32 photo" width="32" height="32">
+              </a>
               <strong>
                 <a @click="viewDetail(item)" href="javascript:void(0);">{{ item.chassis_no }}</a>
               </strong>
