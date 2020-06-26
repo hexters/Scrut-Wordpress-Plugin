@@ -44,8 +44,25 @@ class Scrut {
     add_shortcode( 'scrut_listing', [$this, 'scrut_shortcode_listing'] );
     add_action( 'admin_enqueue_scripts',  [$this, 'enqueue_assets_admin']);
     add_action( 'wp_enqueue_scripts', [$this, 'enqueue_assets_public'] );
+    add_action( 'admin_bar_menu', [$this, 'admin_bar_menu'], 100);
   }
 
+  public function admin_bar_menu ( $admin_bar ) {
+    if ( ! current_user_can( 'manage_options' ) ) {
+      return;
+    }
+    $data = new Setting();
+    $admin_bar->add_menu([
+      'id'    => 'scrut-balance',
+      'title' => '<scrut-balance icon="' . plugins_url( 'admin/assets/scrut.png', SCRUT__FILE ) . '" email="' . $data->email . '" apikey="' . $data->key . '" />',
+      'href'  => 'https://scrut.my/transactions',
+      'meta'  => [
+        'target' => '_blank',
+        'title' => __('Scrut Balance'),
+      ],
+    ]);
+  }
+  
   public function enqueue_assets_admin() {
     wp_enqueue_script( 'scrut_admin_script', plugins_url( 'admin/assets/js/admin-scrut.js', SCRUT__FILE ), [], 1, true );
     wp_enqueue_style( 'scrut_admin_style', plugins_url( 'admin/assets/css/admin-scrut.css', SCRUT__FILE), [], 1, 'all' );

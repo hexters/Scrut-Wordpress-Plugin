@@ -20,10 +20,10 @@
 
     public function update($email, $key) {
       global $wpdb;
-      $data['email'] = $email;
-      $data['api_key'] = $key;
+      $data['email'] = esc_html( trim($email) );
+      $data['api_key'] = esc_html( trim($key) );
       if($this->get_setting()) {
-        return $wpdb->update("{$wpdb->prefix}scrut_setting", $data, ['id' => 1]);
+        return $wpdb->query("UPDATE {$wpdb->prefix}scrut_setting SET email = '" . $data['email'] . "', api_key = '" . $data['api_key'] . "' WHERE id > 0;");
       } else {
         return $wpdb->insert("{$wpdb->prefix}scrut_setting", $data);
       }

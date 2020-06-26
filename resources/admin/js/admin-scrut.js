@@ -6,3 +6,12 @@ Vue.component('scrut-admin-listing', require('./components/ScrutAdminListing.vue
 var vue = new Vue({
   el: '#scrut-admin-app'
 });
+
+// Showing scrut balance in toolbar
+import ScrutBalance from './components/ScrutBalance.vue';
+new Vue({
+  el: '#wp-admin-bar-scrut-balance',
+  components: {
+    ScrutBalance
+  }
+});
