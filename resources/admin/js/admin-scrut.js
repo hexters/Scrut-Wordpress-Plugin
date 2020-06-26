@@ -1,10 +1,9 @@
 import Vue from 'vue';
-window.scrutUrl = process.env.NODE_ENV === 'development' ? 'https://staging.scrut.my' : 'https://scrut.my';
-
-Vue.component('scrut-admin-listing', require('./components/ScrutAdminListing.vue').default);
+import { report } from './router';
 
 var vue = new Vue({
-  el: '#scrut-admin-app'
+  el: '#scrut-admin-report',
+  router: report
 });
 
 // Showing scrut balance in toolbar

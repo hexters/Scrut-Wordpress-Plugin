@@ -1,5 +1,5 @@
 <div class="wrap">
-  <h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
+  <h1 class="wp-heading-inline"><?php echo esc_html( get_admin_page_title() ); ?></h1>
   <?php if(array_key_exists('message', $_SESSION)): ?>  
     <div class="updated notice is-dismissible">
       <p><?php echo $_SESSION['message'] ?></p>

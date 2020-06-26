@@ -7,6 +7,10 @@
 </template>
 <script>
 export default {
-  props: ['email', 'apikey']
+  props: ['email', 'apikey'],
+  mounted() {
+    console.log(ajax_option);
+    
+  }
 }
 </script>

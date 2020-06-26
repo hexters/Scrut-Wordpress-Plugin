@@ -1,0 +1,20 @@
+{
+    "name": "hexters/scrut",
+    "description": "scrut.my",
+    "type": "library",
+    "license": "GPL2",
+    "authors": [
+        {
+            "name": "asep",
+            "email": "hexters@gmail.com"
+        }
+    ],
+    "require": {
+        "guzzlehttp/guzzle": "^6.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "inc/"
+        }
+    }
+}

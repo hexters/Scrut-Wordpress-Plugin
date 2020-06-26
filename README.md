@@ -1,6 +1,10 @@
 # Scrut Wordpress Plugin
 
 ## Getting Started
+Install composer
+```
+$ composer install
+```
 Install node package modules
 ```
 $ yarn install
