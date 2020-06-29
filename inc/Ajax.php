@@ -77,7 +77,21 @@ class Ajax {
         ]
       ]);
       if($response->getStatusCode() == 200) {
-        echo wp_send_json(json_decode($response->getBody()), 200);
+        $data = json_decode($response->getBody(), true);
+        if($data['status'] == 1) {
+          $result = [];
+          foreach($data['data']['keys'] as $no => $key) {
+            $result[] = [
+              'chassis_no' => $no,
+              'found' => $key['found']
+            ];
+          }
+          echo wp_send_json($result , 200);
+        } else {
+          echo wp_send_json([
+            'error' => $data->message
+          ], 417);
+        }
       }
     } catch (\Exception $e) {
       echo wp_send_json([

@@ -13,3 +13,8 @@ Build script and style
 ```
 $ yarn build
 ```
+
+Compailing
+- Remove node_modules
+- Compress to zip
+- Plugin ready to install to wordpress
