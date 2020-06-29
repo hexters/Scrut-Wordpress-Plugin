@@ -89,7 +89,7 @@ class Ajax {
           echo wp_send_json($result , 200);
         } else {
           echo wp_send_json([
-            'error' => $data->message
+            'message' => $data['message']
           ], 417);
         }
       }

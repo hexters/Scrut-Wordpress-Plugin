@@ -66,6 +66,8 @@ export default {
       })
       .catch(error => {
         this.checkLoading = false;
+        let { message } = error.response.data;
+        alert(message);
       });
     }
   }

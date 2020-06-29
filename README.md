@@ -15,6 +15,7 @@ $ yarn prod
 ```
 
 Compailing
+- Remove git `rm -rf .git`
 - Remove node_modules
 - Compress to zip
 - Plugin ready to install to wordpress
