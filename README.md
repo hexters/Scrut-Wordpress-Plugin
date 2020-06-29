@@ -11,7 +11,7 @@ $ yarn install
 ```
 Build script and style
 ```
-$ yarn build
+$ yarn prod
 ```
 
 Compailing
