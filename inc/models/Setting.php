@@ -16,8 +16,12 @@
     }
     
     private function get_setting() {
-      global $wpdb;
-      return $wpdb->get_row("SELECT email, api_key FROM {$wpdb->prefix}scrut_setting LIMIT 1");
+      try {
+        global $wpdb;
+        return $wpdb->get_row("SELECT email, api_key FROM {$wpdb->prefix}scrut_setting LIMIT 1");
+      } catch (\Exception $e) {
+        return null;
+      }
     }
 
     public function update($email, $key) {
