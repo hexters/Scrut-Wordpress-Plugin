@@ -30,12 +30,10 @@ if ( !function_exists( 'add_action' ) ) {
 }
 
 if( ! file_exists( dirname( __FILE__ ) . '/vendor/autoload.php' ) ) {
-	echo 'Lubrary not found!';
+	echo 'PHP Library not found!';
 	exit;
 }
 
-
-define('SCRUT__VERSION', '1.0.0');
 define( 'SCRUT__PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'SCRUT__PLUGIN_PATH_NAME', plugin_basename( __FILE__ ) );
 define('SCRUT__FILE', __FILE__);
