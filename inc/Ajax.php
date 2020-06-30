@@ -83,6 +83,7 @@ class Ajax {
           foreach($data['data']['keys'] as $no => $key) {
             $result[] = [
               'chassis_no' => $no,
+              'buy_url' => "{$this->apiurl}/topup?chassis_no={$no}&key=",
               'found' => $key['found']
             ];
           }

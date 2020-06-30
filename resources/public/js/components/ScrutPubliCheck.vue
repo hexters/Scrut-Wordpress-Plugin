@@ -32,6 +32,7 @@
                 <div>{{ list.transmission }}</div>
                 <div>{{ list.car_grade }}</div>
                 <div>{{ list.status }}</div>
+                <a :href="`${item.buy_url}${list.key}`" target="_blank" class="button button-action button-buy" style="float:right;">Buy Report</a>
               </td>
             </tr>
           </tbody>
@@ -69,6 +70,9 @@ export default {
         let { message } = error.response.data;
         alert(message);
       });
+    },
+    buy(chassis_no, key) {
+      window.open(`${ajax_option.ajaxurl}/topup?chassis_no=${chassis_no}&key=${key}`, '_blank');
     }
   }
 }
@@ -93,6 +97,13 @@ export default {
         width: 100%;
         background: #d2232a;
       }
+    }
+    .button-action{
+      background: #d2232a;
+    }
+    .button-buy {
+      padding: 5px 30px;
+      font-size: 80%;
     }
     table.table-result{
       background: #ffffff;
