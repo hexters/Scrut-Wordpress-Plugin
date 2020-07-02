@@ -40,7 +40,10 @@
                 <div>{{ list.transmission }}</div>
                 <div>{{ list.car_grade }}</div>
                 <div>{{ list.status }}</div>
-                <a v-if="list.status == 'available'" :href="`${item.buy_url}${list.key}`" target="_blank" class="button button-action button-buy" style="float:right;">Buy Report</a>
+                <button v-if="list.status == 'available'" @click="buy(item.chassis_no, list)" class="button button-action button-buy" style="float:right;">
+                  <img v-if="list.loading" :src="`${assets}/images/loading-red-white.gif`" width="20" style="display:inline;">
+                  <span v-else>Buy Report</span>
+                </button>
               </td>
             </tr>
           </tbody>
@@ -55,7 +58,7 @@
 import axios from 'axios';
 
 export default {
-  props: ['assets'],
+  props: ['assets', 'checkoutLink'],
   data() {
     return {
       chassisNo: '',
@@ -86,44 +89,23 @@ export default {
         alert(message);
       });
     },
-    buy(chassis_no, key) {
-      window.open(`${ajax_option.ajaxurl}/topup?chassis_no=${chassis_no}&key=${key}`, '_blank');
+    buy(no, item) {
+      if(item.loading) return;
+
+      item.loading = true;
+      axios.post(`${ajax_option.ajaxurl}?action=add_chart`, {
+        nomor: no,
+        chassis: item
+      })
+      .then((json) => {
+        window.open(this.checkoutLink, "_self");
+      })
+      .catch(error => {
+        item.loading = false;
+        let { message } = error.response.data;
+        alert(message);
+      });
     }
   }
 }
 </script>
-<style lang="scss">
-  .scrut {
-    max-width: 580px;
-    font-family: Arial, Helvetica, sans-serif;
-    &.check-wrap {
-      text-align: center;
-    }
-    .logo{
-      display: inline;
-    }
-    .title {
-      font-weight: bold;
-      margin: 0;
-    }
-    .action {
-      margin-top: 1em;
-      button {
-        width: 100%;
-        background: #d2232a;
-      }
-    }
-    .button-action{
-      background: #d2232a;
-    }
-    .button-buy {
-      padding: 5px 30px;
-      font-size: 80%;
-    }
-    table.table-result{
-      background: #ffffff;
-    }
-
-  }
-  
-</style>

@@ -81,10 +81,14 @@ class Ajax {
         if($data['status'] == 1) {
           $result = [];
           foreach($data['data']['keys'] as $no => $key) {
+            $founds = [];
+            foreach($key['found'] as $found) {
+              $founds[] = array_merge($found, ['loading' => false]);
+            }
             $result[] = [
               'chassis_no' => $no,
               'buy_url' => "{$this->apiurl}/topup?chassis_no={$no}&key=",
-              'found' => $key['found']
+              'found' => $founds
             ];
           }
           echo wp_send_json($result , 200);
@@ -157,6 +161,32 @@ class Ajax {
       ], 417);
     }
     exit;
+  }
+
+  public function add_chart() {
+    try {
+      if(is_null($this->request('nomor'))) {
+        throw new \Exception("chassis no is required");
+      }
+
+      if(is_null($this->request('chassis'))) {
+        throw new \Exception("chassis is required");
+      }
+
+      $chassis = json_encode(array_merge(
+        $this->request('chassis'),
+        [
+          'chassis_no' => $this->request('nomor') 
+        ] 
+      ));
+      unset($_SESSION['scrut_cart']);
+      $_SESSION['scrut_cart'] = $chassis;
+      echo wp_send_json('Chassis added to chart', 200);
+    } catch (\Exception $e) {
+      echo wp_send_json([
+        'message' => $e->getMessage()
+      ], 417);
+    }
   }
 
   private function request($param) {

@@ -3,7 +3,7 @@
     <h3>Chassis No {{ chassis_no }}</h3>
 
     <div class="loading" v-if="loading">
-      <img :src="`${assets}/images/loading-red.gif`" width="20" style="float:left;margin-right:.3rem;"> Loading...
+      <img :src="`${assets}/images/spinner-2x.gif`" width="20" style="float:left;margin-right:.3rem;"> Loading...
     </div>
     <div class="error" v-if="error">
       <p>{{ error }}</p>

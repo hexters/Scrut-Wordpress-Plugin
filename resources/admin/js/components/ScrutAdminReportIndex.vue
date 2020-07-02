@@ -23,7 +23,7 @@
             <td colspan="3">No Report found</td>
           </tr>
           <tr v-if="fetchLoading">
-            <td colspan="3"><img :src="`${assets}/images/loading-red.gif`" width="20" style="float:left;margin-right:.3rem;"> Loading...</td>
+            <td colspan="3"><img :src="`${assets}/images/spinner-2x.gif`" width="20" style="float:left;margin-right:.3rem;"> Loading...</td>
           </tr>
           <tr v-for="(item, i) in listFilter" :key="i">
             <th scope="row" class="check-column">
