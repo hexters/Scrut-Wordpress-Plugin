@@ -10,7 +10,10 @@
         <input type="text" name="shassis_no" v-model="chassisNo" id="shassis_no" style="width:100%;text-align:center;" placeholder="Type Japan VIN / chassis no. here" required>
       </div>
       <div class="action">
-        <button type="submit" :disabled="checkLoading"> {{ checkLoading ? 'Checking...' : 'Check!' }}</button>
+        <button type="submit" :disabled="checkLoading" style="text-align:center;">
+          <img v-if="checkLoading" :src="`${assets}/images/loading-red-white.gif`" width="20" style="display:inline;">
+          <span v-else>Check!</span>
+        </button>
       </div>
     </form>
 

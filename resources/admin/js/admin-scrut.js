@@ -1,9 +1,14 @@
 import Vue from 'vue';
-import { report } from './router';
+
+import ScrutAdminReportIndex from './components/ScrutAdminReportIndex.vue';
+import ScrutAdminReportDetail from './components/ScrutAdminReportDetail.vue';
 
 var vue = new Vue({
   el: '#scrut-admin-report',
-  router: report
+  components: {
+    ScrutAdminReportIndex,
+    ScrutAdminReportDetail
+  }
 });
 
 // Showing scrut balance in toolbar

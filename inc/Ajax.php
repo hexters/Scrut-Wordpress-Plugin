@@ -138,7 +138,7 @@ class Ajax {
     try {
 
       if(is_null($this->request('report_id'))) {
-        throw new \Exception("reposrt_id is required");
+        throw new \Exception("report_id is required");
       }
 
       $response = $this->client()->get('/api/view', [

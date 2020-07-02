@@ -23,7 +23,7 @@
             <td colspan="3">No Report found</td>
           </tr>
           <tr v-if="fetchLoading">
-            <td colspan="3">Fetching report...</td>
+            <td colspan="3"><img :src="`${assets}/images/loading-red.gif`" width="20" style="float:left;margin-right:.3rem;"> Loading...</td>
           </tr>
           <tr v-for="(item, i) in listFilter" :key="i">
             <th scope="row" class="check-column">
@@ -62,7 +62,7 @@
 <script>
 import axios from 'axios';
 export default {
-  props: ['email', 'apikey'],
+  props: ['assets'],
   data() {
     return {
       lists: [],
@@ -84,9 +84,8 @@ export default {
   },
   methods: {
     viewDetail(item) {
-      this.$router.push({ path: `/detail/${item.chassis_no}`, query: {
-        result: JSON.stringify(item.result)
-      } });
+      let detail = `${window.location.href}&detail=${item.report_id}`;
+      window.open(detail, "_self");
     },
     _fetchList() {
       this.fetchLoading = true;
@@ -99,8 +98,8 @@ export default {
         this.fetchLoading = false;
       })
       .catch(error => {
-        console.log('error', error);
-        
+        let { message } = error.response.data;
+        alert(message);
         this.fetchLoading = false;
       });
     }

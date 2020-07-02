@@ -1,8 +1,10 @@
 <template>
   <div>
-    <button @click="backPage()" style="float:left;" class="button">&larr; Back</button>
-    <h3 style="float:left;margin-top:5px;margin-left:1em;">Shassis No {{ $route.params.id }}</h3>
-    
+    <h3>Shassis No {{ chassis_no }}</h3>
+
+    <div class="loading" v-if="loading">
+      <img :src="`${assets}/images/loading-red.gif`" width="20" style="float:left;margin-right:.3rem;"> Loading...
+    </div>
 
     <div v-for="(item, i) in results" :key="i" style="margin-top:1em;">
       <table class="wp-list-table widefat fixed striped posts">
@@ -107,23 +109,34 @@
   </div>
 </template>
 <script>
+import axios from 'axios';
 
 export default {
+  props: ['report', 'assets'],
   data() {
     return {
-      results: []
+      loading: false,
+      results: [],
+      chassis_no: null
     }
   },
   mounted() {
-    let { result } = this.$route.query;
-    this.results = result ? JSON.parse(result) : [];
+    this.fetchDetail();
   },
   methods: {
-    backPage() {
-      this.$router.go(-1);
-    },
-    openImage(e, images) {
-      
+    fetchDetail() {
+      this.loading = true;
+      axios.post(`${ajax_option.ajaxurl}?action=get_view`, {
+        report_id: this.report
+      }).then(json => {
+        this.chassis_no = json.data.data.chassis_no;
+        this.results = json.data.data.result;
+        this.loading = false;
+      }).catch(error => {
+        let { message } = error.response.data;
+        alert(message);
+        this.loading = false;
+      });
     }
   }
 }
