@@ -92,7 +92,6 @@ class Scrut extends Ajax {
 
     add_action( 'wp_ajax_add_chart', [$this, 'add_chart'] );
     add_action( 'wp_ajax_nopriv_add_chart', [$this, 'add_chart'] );
-
     
   }
   
@@ -163,7 +162,7 @@ class Scrut extends Ajax {
   public function add_parent_menu() {
     add_menu_page( __('Scrut', 'scrut'), __('Scrut', 'scrut'), null, 'scrut_menu', '', plugins_url( 'scrut/admin/assets/scrut.png' ), 30 );
     add_submenu_page( 'scrut_menu', __('Order'), __('Order'), 'manage_options', 'scrut_order', [$this, 'order_view'], 1 );
-    add_submenu_page( 'scrut_menu', __('My Report'), __('Report'), 'manage_options', 'scrut_report', [$this, 'my_report_view'], 2 );
+    add_submenu_page( 'scrut_menu', __('My Report'), __('My Report'), 'manage_options', 'scrut_report', [$this, 'my_report_view'], 2 );
     add_submenu_page( 'scrut_menu', __('Scrut Setting'), __('Setting'), 'administrator', 'scrut_setting', [$this, 'setting_view'], 3 );
   }
 

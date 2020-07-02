@@ -18,10 +18,14 @@
     
 
   <form action="<?php echo admin_url( 'admin-post.php' ) ?>" method="POST">
+
+    <div>
+      <?php echo add_scrut_payment_gateway() ?>
+    </div>
+
     <input type="hidden" name="action" value="scrut-post-checkout">
-    
-      <button value="cancel" name="type">Cancel</button> 
-      <button name="type" value="submit">Submit</button>
+    <button value="cancel" name="type">Cancel</button> 
+    <button name="type" value="submit">Submit</button>
     
   </form>
 
