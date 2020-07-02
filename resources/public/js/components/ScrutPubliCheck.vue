@@ -7,15 +7,20 @@
       </h3>
       <p><strong>Don't buy a car without knowing the <u>REAL</u> history!</strong></p>
       <div>
-        <input type="text" name="shassis_no" v-model="chassisNo" id="shassis_no" style="width:100%;text-align:center;" placeholder="Type Japan VIN / chassis no. here" required>
+        <input type="text" name="chassis_no" v-model="chassisNo" id="chassis_no" style="width:100%;text-align:center;" placeholder="Type Japan VIN / chassis no. here" required>
       </div>
       <div class="action">
         <button type="submit" :disabled="checkLoading" style="text-align:center;">
-          <img v-if="checkLoading" :src="`${assets}/images/loading-red-white.gif`" width="20" style="display:inline;">
+          <img v-if="checkLoading" :src="`${assets}/images/loading-red-white.gif`" width="30" style="display:inline;">
           <span v-else>Check!</span>
         </button>
       </div>
     </form>
+
+    <div v-if="error">
+      <hr>
+      <p>{{ error }}</p>
+    </div>
 
     <div v-if="reports.length > 0">
       <hr>
@@ -35,7 +40,7 @@
                 <div>{{ list.transmission }}</div>
                 <div>{{ list.car_grade }}</div>
                 <div>{{ list.status }}</div>
-                <a :href="`${item.buy_url}${list.key}`" target="_blank" class="button button-action button-buy" style="float:right;">Buy Report</a>
+                <a v-if="list.status == 'available'" :href="`${item.buy_url}${list.key}`" target="_blank" class="button button-action button-buy" style="float:right;">Buy Report</a>
               </td>
             </tr>
           </tbody>
@@ -55,18 +60,25 @@ export default {
     return {
       chassisNo: '',
       checkLoading: false,
-      reports: []
+      reports: [],
+      error: null
     }
   },
   methods: {
     check() {
       this.checkLoading = true;
+      this.error = null;
+      this.reports = [];
       axios.post(`${ajax_option.ajaxurl}?action=get_check`, {
         chassis_no: this.chassisNo
       })
       .then(json => {
         this.checkLoading = false;
-        this.reports = json.data;
+        if(json.data.length > 0) {
+          this.reports = json.data;
+        } else {
+          this.error = 'Chassis not found!';
+        }
       })
       .catch(error => {
         this.checkLoading = false;

@@ -26,6 +26,7 @@ class Scrut extends Ajax {
     ";
     $wpdb->query($query);
 
+    // Create page Check
     $my_post = [
       'post_title'    => wp_strip_all_tags( 'Scrut Check' ),
       'post_content'  => '[scrut_check]',
@@ -35,12 +36,24 @@ class Scrut extends Ajax {
       'post_name'     => 'scrut-check'
     ];
     wp_insert_post( $my_post );
+
+    // Create page checkout
+    $my_post = [
+      'post_title'    => wp_strip_all_tags( 'Scrut Checkout' ),
+      'post_content'  => '[scrut_checkout]',
+      'post_status'   => 'publish',
+      'post_author'   => 1,
+      'post_type'     => 'page',
+      'post_name'     => 'scrut-checkout'
+    ];
+    wp_insert_post( $my_post );
     
   }
 
   public function deactivate() {
     global $wpdb;
     $wpdb->query("DELETE FROM {$wpdb->posts} WHERE post_name = 'scrut-check';");
+    $wpdb->query("DELETE FROM {$wpdb->posts} WHERE post_name = 'scrut-checkout';");
     $themePath = get_template_directory();
   }
 
@@ -49,6 +62,7 @@ class Scrut extends Ajax {
     add_action( 'admin_menu', [$this, 'add_parent_menu']);
     add_action( 'admin_post_scrut-post-setting', [$this, 'setting_post_data'] );
     add_shortcode( 'scrut_check', [$this, 'scrut_shortcode_check'] );
+    add_shortcode( 'scrut_checkout', [$this, 'scrut_shortcode_checkout'] );
     add_action( 'admin_enqueue_scripts',  [$this, 'enqueue_assets_admin']);
     add_action( 'wp_enqueue_scripts', [$this, 'enqueue_assets_public'] );
     add_action( 'admin_bar_menu', [$this, 'admin_bar_menu'], 100);
@@ -195,9 +209,18 @@ class Scrut extends Ajax {
   public function scrut_shortcode_check( $atts ) {
     $data = $this->setting;
     if(!$data) {
-      echo '<h1>Scrut Api Key not found</h1>';
+      die('<h1>Scrut Api Key not found</h1>');
     } else {
       require_once( SCRUT__PLUGIN_DIR . '/public/check.php');
+    }
+  }
+
+  public function scrut_shortcode_checkout() {
+    $data = $this->setting;
+    if(!$data) {
+      die('<h1>Scrut Api Key not found</h1>');
+    } else {
+      require_once( SCRUT__PLUGIN_DIR . '/public/checkout.php');
     }
   }
 
