@@ -182,7 +182,8 @@ class Ajax {
       $chassis = json_encode(array_merge(
         $this->request('chassis'),
         [
-          'chassis_no' => $this->request('nomor') 
+          'chassis_no' => $this->request('nomor'),
+          'price' => $this->request('price')
         ] 
       ));
       unset($_SESSION['scrut_cart']);

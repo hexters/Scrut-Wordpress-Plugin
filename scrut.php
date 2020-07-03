@@ -43,9 +43,11 @@ require_once( dirname( __FILE__ ) . '/inc/hook.php' );
 require_once( dirname( __FILE__ ) . '/inc/ScrutPaymentGateway.php' );
 
 use App\Scrut;
+use App\Payment;
 
 $scrut = new Scrut();
 $scrut->register();
+$payment = new Payment(new ScrutPaymentGateway);
 
 register_activation_hook( __FILE__, [$scrut, 'activate'] );
 register_deactivation_hook( __FILE__, [$scrut, 'deactivate'] );

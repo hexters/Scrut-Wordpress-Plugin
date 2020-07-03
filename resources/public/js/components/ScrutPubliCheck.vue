@@ -40,7 +40,7 @@
                 <div>{{ list.transmission }}</div>
                 <div>{{ list.car_grade }}</div>
                 <div>{{ list.status }}</div>
-                <button v-if="list.status == 'available'" @click="buy(item.chassis_no, list)" class="button button-action button-buy" style="float:right;">
+                <button v-if="list.status == 'available'" @click="buy(item.chassis_no, item.price, list)" class="button button-action button-buy" style="float:right;">
                   <img v-if="list.loading" :src="`${assets}/images/loading-red-white.gif`" width="20" style="display:inline;">
                   <span v-else>Buy {{ item.price }} MYR</span>
                 </button>
@@ -89,12 +89,13 @@ export default {
         alert(message);
       });
     },
-    buy(no, item) {
+    buy(no, price, item) {
       if(item.loading) return;
 
       item.loading = true;
       axios.post(`${ajax_option.ajaxurl}?action=add_chart`, {
         nomor: no,
+        price: price,
         chassis: item
       })
       .then((json) => {

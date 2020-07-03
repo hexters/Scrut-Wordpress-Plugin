@@ -1,0 +1,26 @@
+.checkout {
+  .scrut-error {
+    border-left: solid 5px orange;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    background-color: white;
+    p {
+      margin: 0;
+    }
+  }
+  .payment{
+    background-color: white;
+    padding: 1rem;
+    margin-bottom: 1rem;
+
+    table {
+      width: 100%;
+      margin: 0 0 1rem 0;
+      tr {
+        td {
+          border: none;
+        }
+      }
+    }
+  }
+}

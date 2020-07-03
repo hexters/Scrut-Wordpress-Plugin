@@ -22,6 +22,21 @@ class Scrut extends Ajax {
       'report_price' => 50
     ]) );
 
+    add_option( 'scrut_payment_methods', serialize([
+      'bank_transfer'
+    ]) );
+
+
+    // Create page checkout
+    $my_post = [
+      'post_title'    => wp_strip_all_tags( 'Scrut Account' ),
+      'post_content'  => '[scrut_account]',
+      'post_status'   => 'publish',
+      'post_author'   => 1,
+      'post_type'     => 'page',
+      'post_name'     => 'scrut-account'
+    ];
+    wp_insert_post( $my_post );
 
     // Create page Check
     $my_post = [
@@ -45,16 +60,7 @@ class Scrut extends Ajax {
     ];
     wp_insert_post( $my_post );
 
-    // Create page checkout
-    $my_post = [
-      'post_title'    => wp_strip_all_tags( 'Scrut Account' ),
-      'post_content'  => '[scrut_account]',
-      'post_status'   => 'publish',
-      'post_author'   => 1,
-      'post_type'     => 'page',
-      'post_name'     => 'scrut-account'
-    ];
-    wp_insert_post( $my_post );
+    
     
   }
 
@@ -64,7 +70,7 @@ class Scrut extends Ajax {
     $wpdb->query("DELETE FROM {$wpdb->posts} WHERE post_name = 'scrut-checkout';");
     $wpdb->query("DELETE FROM {$wpdb->posts} WHERE post_name = 'scrut-account';");
     $themePath = get_template_directory();
-    delete_option( 'scrut_general_option' );
+    
   }
 
   public function register() {
@@ -303,6 +309,8 @@ class Scrut extends Ajax {
     if(in_array($_POST['type'], ['cancel'])) {
       unset($_SESSION['scrut_cart']);
       $this->redirect( get_permalink( get_page_by_path( 'scrut-checkout' ) ) );
+    } else if(in_array($_POST['type'], ['submit'])) {
+      echo json_encode($_POST, null, 4);
     }
     
   }
