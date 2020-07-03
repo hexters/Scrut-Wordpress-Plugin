@@ -316,8 +316,9 @@ class Scrut extends Ajax {
         $firstName = $name[0];
         $lastName = ltrim(esc_html( trim($_POST['display_name']) ), $name[0]);
 
+        $user_login = explode('@', esc_html( trim($_POST['user_email']) ));
         $user_id = wp_insert_user( [
-          'user_login' => esc_html( trim($_POST['user_login']) ),
+          'user_login' => $user_login[0],
           'display_name' => esc_html( trim($_POST['display_name']) ),
           'user_pass' => esc_html( trim($_POST['user_pass']) ),
           'user_email' => esc_html( trim($_POST['user_email']) ),

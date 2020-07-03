@@ -4,10 +4,6 @@
   </div>
 <?php endif; ?>
 <div class="form-group">
-  <label for="user_login">Username <span class="text-danger">*</span></label>
-  <input type="text" name="user_login" value="<?php echo $user->user_login ?>" id="user_login" required>
-</div>
-<div class="form-group">
   <label for="display_name">Full Name <span class="text-danger">*</span></label>
   <input type="text" name="display_name" value="<?php echo $user->display_name ?>" id="display_name" required>
 </div>
