@@ -42,7 +42,7 @@
                 <div>{{ list.status }}</div>
                 <button v-if="list.status == 'available'" @click="buy(item.chassis_no, list)" class="button button-action button-buy" style="float:right;">
                   <img v-if="list.loading" :src="`${assets}/images/loading-red-white.gif`" width="20" style="display:inline;">
-                  <span v-else>Buy Report</span>
+                  <span v-else>Buy {{ item.price }} MYR</span>
                 </button>
               </td>
             </tr>

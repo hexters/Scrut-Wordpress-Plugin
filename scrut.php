@@ -38,9 +38,9 @@ define( 'SCRUT__PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'SCRUT__PLUGIN_PATH_NAME', plugin_basename( __FILE__ ) );
 define('SCRUT__FILE', __FILE__);
 
+require_once( dirname( __FILE__ ) . '/vendor/autoload.php' );
 require_once( dirname( __FILE__ ) . '/inc/hook.php' );
 require_once( dirname( __FILE__ ) . '/inc/ScrutPaymentGateway.php' );
-require_once( dirname( __FILE__ ) . '/vendor/autoload.php' );
 
 use App\Scrut;
 

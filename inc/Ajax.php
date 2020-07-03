@@ -5,12 +5,14 @@ use App\Models\Setting;
 use GuzzleHttp\Client;
 
 class Ajax {
-  public $setting;
   public $apiurl;
 
   public function __construct() {
-    $this->setting = new Setting();
     $this->apiurl = WP_DEBUG ? 'https://staging.scrut.my' : 'https://scrut.my';
+  }
+
+  public function setting() {
+    return new Setting;
   }
 
   public function client() {
@@ -21,8 +23,8 @@ class Ajax {
     try {
       $response = $this->client()->get('/api/list', [
         'query' => [
-          'email' => $this->setting->email,
-          'key' => $this->setting->key,
+          'email' => $this->setting()->email,
+          'key' => $this->setting()->key,
         ]
       ]);
       if($response->getStatusCode() == 200) {
@@ -37,11 +39,14 @@ class Ajax {
   }
 
   public function get_balance() {
+    if(is_null($this->setting()->email)) {
+      return;
+    }
     try {
       $response = $this->client()->get('/api/balance', [
         'query' => [
-          'email' => $this->setting->email,
-          'key' => $this->setting->key,
+          'email' => $this->setting()->email,
+          'key' => $this->setting()->key,
         ]
       ]);
       if($response->getStatusCode() == 200) {
@@ -71,8 +76,8 @@ class Ajax {
 
       $response = $this->client()->get('/api/check', [
         'query' => [
-          'email' => $this->setting->email,
-          'key' => $this->setting->key,
+          'email' => $this->setting()->email,
+          'key' => $this->setting()->key,
           'chassis_no' => $this->request('chassis_no')
         ]
       ]);
@@ -88,6 +93,7 @@ class Ajax {
             $result[] = [
               'chassis_no' => $no,
               'buy_url' => "{$this->apiurl}/topup?chassis_no={$no}&key=",
+              'price' => number_format($this->setting()->price, 2),
               'found' => $founds
             ];
           }
@@ -120,8 +126,8 @@ class Ajax {
 
       $response = $this->client()->get('/api/buy', [
         'query' => [
-          'email' => $this->setting->email,
-          'key' => $this->setting->key,
+          'email' => $this->setting()->email,
+          'key' => $this->setting()->key,
           'chassis_no' => $this->request('chassis_no'),
           'from' => $this->request('from'),
           'chassis_key' => $this->request('chassis_key'),
@@ -147,8 +153,8 @@ class Ajax {
 
       $response = $this->client()->get('/api/view', [
         'query' => [
-          'email' => $this->setting->email,
-          'key' => $this->setting->key,
+          'email' => $this->setting()->email,
+          'key' => $this->setting()->key,
           'report_id' => $this->request('report_id')
         ]
       ]);

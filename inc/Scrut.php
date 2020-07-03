@@ -2,7 +2,7 @@
 
 
 namespace App;
-
+use App\Models\Setting;
 if(! session_id()) {
   session_start();
 }
@@ -15,16 +15,13 @@ class Scrut extends Ajax {
   }
 
   public function activate() {
-    global $wpdb;
-    $query = "
-      CREATE TABLE IF NOT EXISTS {$wpdb->prefix}scrut_setting (
-        id INT(11) NOT NULL AUTO_INCREMENT,
-        email VARCHAR(200) NULL,
-        api_key VARCHAR(1000) NULL,
-        PRIMARY KEY (id)
-      );
-    ";
-    $wpdb->query($query);
+
+    add_option( 'scrut_general_option', serialize([
+      'email' => null,
+      'api_key' => null,
+      'report_price' => 50
+    ]) );
+
 
     // Create page Check
     $my_post = [
@@ -47,6 +44,17 @@ class Scrut extends Ajax {
       'post_name'     => 'scrut-checkout'
     ];
     wp_insert_post( $my_post );
+
+    // Create page checkout
+    $my_post = [
+      'post_title'    => wp_strip_all_tags( 'Scrut Account' ),
+      'post_content'  => '[scrut_account]',
+      'post_status'   => 'publish',
+      'post_author'   => 1,
+      'post_type'     => 'page',
+      'post_name'     => 'scrut-account'
+    ];
+    wp_insert_post( $my_post );
     
   }
 
@@ -54,7 +62,9 @@ class Scrut extends Ajax {
     global $wpdb;
     $wpdb->query("DELETE FROM {$wpdb->posts} WHERE post_name = 'scrut-check';");
     $wpdb->query("DELETE FROM {$wpdb->posts} WHERE post_name = 'scrut-checkout';");
+    $wpdb->query("DELETE FROM {$wpdb->posts} WHERE post_name = 'scrut-account';");
     $themePath = get_template_directory();
+    delete_option( 'scrut_general_option' );
   }
 
   public function register() {
@@ -64,14 +74,18 @@ class Scrut extends Ajax {
     add_action( 'admin_enqueue_scripts',  [$this, 'enqueue_assets_admin']);
     add_action( 'admin_bar_menu', [$this, 'admin_bar_menu'], 100);
     add_action( 'admin_enqueue_scripts',  [$this, 'enqueue_fancyapps_plugin']);
+    add_action( 'init', [$this, 'add_roles'] );
     $this->register_ajax();
     
     // Public
     add_shortcode( 'scrut_check', [$this, 'scrut_shortcode_check'] );
     add_shortcode( 'scrut_checkout', [$this, 'scrut_shortcode_checkout'] );
+    add_shortcode( 'scrut_account', [$this, 'scrut_shortcode_account'] );
     add_action( 'wp_enqueue_scripts', [$this, 'enqueue_assets_public'] );
     add_action( 'admin_post_nopriv_scrut-post-checkout', [$this, 'scrut_shortcode_checkout_post'] );
     add_action( 'admin_post_scrut-post-checkout', [$this, 'scrut_shortcode_checkout_post'] );
+    add_action( 'admin_post_scrut-post-account', [$this, 'scrut_shortcode_account_post'] );
+    add_action( 'init', [$this, 'disabled_admin_bar']);
   }
 
   public function register_ajax() {
@@ -94,6 +108,18 @@ class Scrut extends Ajax {
     add_action( 'wp_ajax_nopriv_add_chart', [$this, 'add_chart'] );
     
   }
+
+  public function add_roles() {
+    if(!wp_roles(  )->is('customer')) {
+      add_role( 'customer', 'Customer', [] );
+    }
+  }
+
+  public function disabled_admin_bar() {
+    if(current_user_can( 'customer' )) {
+      show_admin_bar( false );
+    }
+  }
   
   public function admin_bar_menu ( $admin_bar ) {
     if ( ! current_user_can( 'manage_options' ) ) {
@@ -101,7 +127,7 @@ class Scrut extends Ajax {
     }
     $admin_bar->add_menu([
       'id'    => 'scrut-balance',
-      'title' => '<scrut-balance icon="' . plugins_url( 'admin/assets/scrut.png', SCRUT__FILE ) . '" email="' . $this->setting->email . '" apikey="' . $this->setting->key . '" />',
+      'title' => '<scrut-balance icon="' . plugins_url( 'admin/assets/scrut.png', SCRUT__FILE ) . '" email="' . $this->setting()->email . '" apikey="' . $this->setting()->key . '" />',
       'href'  => 'javascript:void(0);',
       'meta'  => [
         'target' => '_blank',
@@ -168,7 +194,7 @@ class Scrut extends Ajax {
 
   public function setting_view() {
 
-    $data = $this->setting;
+    $data = $this->setting();
     require_once(SCRUT__PLUGIN_DIR . '/admin/setting.php');
     unset($_SESSION['email']);
     unset($_SESSION['key']);
@@ -187,13 +213,16 @@ class Scrut extends Ajax {
     if(empty($_POST['key'])) {
       $_SESSION['key'][] = "Api Key is required!";
     }
-    if(empty($_POST['email']) || empty($_POST['key'])) {
+    if(empty($_POST['report_price'])) {
+      $_SESSION['report_price'][] = "Report Price is required!";
+    }
+    if(empty($_POST['email']) || empty($_POST['key']) || empty($_POST['report_price'])) {
       return $redirect;
     }
     
     try {
-      $data = $this->setting;
-      $data->update(esc_html( trim($_POST['email']) ), esc_html( trim($_POST['key']) ));
+      $data = $this->setting();
+      $data->update(esc_html( trim($_POST['email']) ), esc_html( trim($_POST['key']) ), esc_html( trim($_POST['report_price']) ) );
       $_SESSION['message'] = "Update has been succesfully";
       return $redirect;
     } catch (Exception $e) {
@@ -204,7 +233,7 @@ class Scrut extends Ajax {
   }
 
   public function my_report_view() {
-    $data = $this->setting;
+    $data = $this->setting();
     if(is_null($data->email) || is_null($data->key)) {
       $_SESSION['error'] = 'Please completed this data below!';
       $this->redirect(admin_url( 'admin.php?page=scrut_setting' ));
@@ -215,7 +244,7 @@ class Scrut extends Ajax {
   }
 
   public function order_view() {
-    $data = $this->setting;
+    $data = $this->setting();
     if(is_null($data->email) || is_null($data->key)) {
       $_SESSION['error'] = 'Please completed this data below!';
       $this->redirect(admin_url( 'admin.php?page=scrut_setting' ));
@@ -225,7 +254,7 @@ class Scrut extends Ajax {
   }
 
   public function scrut_shortcode_check( $atts ) {
-    $data = $this->setting;
+    $data = $this->setting();
     if(!$data) {
       die('<h1>Scrut Api Key not found</h1>');
     } else {
@@ -234,7 +263,7 @@ class Scrut extends Ajax {
   }
 
   public function scrut_shortcode_checkout() {
-    $data = $this->setting;
+    $data = $this->setting();
     if(!$data) {
       die('<h1>Scrut Api Key not found</h1>');
     } else {
@@ -244,6 +273,29 @@ class Scrut extends Ajax {
       }
       require_once( SCRUT__PLUGIN_DIR . '/public/checkout.php');
     }
+  }
+
+  public function scrut_shortcode_account() {
+    $data = $this->setting();
+    if(!$data) {
+      die('<h1>Scrut Api Key not found</h1>');
+    } else {
+      $chassis = null;
+      if(isset($_SESSION['scrut_cart'])) {
+        $chassis = json_decode($_SESSION['scrut_cart']);
+      }
+
+      if(is_user_logged_in(  )) {
+        $user = wp_get_current_user();
+        require_once( SCRUT__PLUGIN_DIR . '/public/account.php');
+      } else {
+        require_once( SCRUT__PLUGIN_DIR . '/public/login.php');
+      }
+    }
+  }
+
+  public function scrut_shortcode_account_post() {
+
   }
 
   public function scrut_shortcode_checkout_post() {
