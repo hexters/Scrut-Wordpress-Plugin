@@ -310,7 +310,34 @@ class Scrut extends Ajax {
       unset($_SESSION['scrut_cart']);
       $this->redirect( get_permalink( get_page_by_path( 'scrut-checkout' ) ) );
     } else if(in_array($_POST['type'], ['submit'])) {
-      echo json_encode($_POST, null, 4);
+      if(!is_user_logged_in(  )) {
+
+        $name = explode(' ', esc_html( trim($_POST['display_name']) ));
+        $firstName = $name[0];
+        $lastName = ltrim(esc_html( trim($_POST['display_name']) ), $name[0]);
+
+        $user_id = wp_insert_user( [
+          'user_login' => esc_html( trim($_POST['user_login']) ),
+          'display_name' => esc_html( trim($_POST['display_name']) ),
+          'user_pass' => esc_html( trim($_POST['user_pass']) ),
+          'user_email' => esc_html( trim($_POST['user_email']) ),
+          'first_name' => trim($firstName),
+          'last_name' => trim($lastName),
+          'role' => 'customer'
+        ] );
+          
+        
+        $user = get_user_by( 'id', $user_id );
+        wp_set_current_user( $user_id, $user );
+        wp_set_auth_cookie( $user_id );
+        do_action( 'wp_login', $user );
+        
+      }
+
+      $current_user = wp_get_current_user();
+
+      echo json_encode($current_user, null, 4);
+
     }
     
   }
