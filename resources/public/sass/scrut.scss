@@ -37,6 +37,10 @@
     color: red;
   }
 
+  .form-control {
+    width: 100%;
+  }
+
   @import "checkout";
   @import "bootstrap-grid";
 

@@ -37,17 +37,20 @@ if( ! file_exists( dirname( __FILE__ ) . '/vendor/autoload.php' ) ) {
 define( 'SCRUT__PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'SCRUT__PLUGIN_PATH_NAME', plugin_basename( __FILE__ ) );
 define('SCRUT__FILE', __FILE__);
+if(! defined('SPARATOR')) {
+	define('SPARATOR', '/');
+}
 
 require_once( dirname( __FILE__ ) . '/vendor/autoload.php' );
-require_once( dirname( __FILE__ ) . '/inc/hook.php' );
-require_once( dirname( __FILE__ ) . '/inc/ScrutPaymentGateway.php' );
+require_once( dirname( __FILE__ ) . '/inc/models/ScrutOrder.php' );
+require_once( dirname( __FILE__ ) . '/inc/abstract/ScrutPaymentGateway.php' );
 
 use App\Scrut;
 use App\Payment;
 
 $scrut = new Scrut();
 $scrut->register();
-$payment = new Payment(new ScrutPaymentGateway);
+$payment = new Payment();
 
 register_activation_hook( __FILE__, [$scrut, 'activate'] );
 register_deactivation_hook( __FILE__, [$scrut, 'deactivate'] );

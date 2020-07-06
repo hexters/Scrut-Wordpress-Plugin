@@ -1,0 +1,1 @@
+<?php do_action('scrut_admin_setting_form') ?>

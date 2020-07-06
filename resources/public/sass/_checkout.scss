@@ -12,15 +12,29 @@
     background-color: white;
     padding: 1rem;
     margin-bottom: 1rem;
-
+    border-top: solid 1px #dddddd;
     table {
       width: 100%;
       margin: 0 0 1rem 0;
+      border: none;
       tr {
         td {
           border: none;
         }
       }
     }
+  }
+
+  .summary {
+    border: solid 1px rgba(0,0,0,.08);
+    background-color: white;
+    padding: 1rem 1rem 0rem 1rem;
+    margin: 1rem 0;
+    .order-item {
+      margin-bottom: 2rem;
+    }
+  }
+  .btn-pay {
+    background-color: #d2232a;
   }
 }

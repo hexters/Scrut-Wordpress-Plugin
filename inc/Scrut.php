@@ -14,11 +14,37 @@ class Scrut extends Ajax {
     parent::__construct();
   }
 
+  public function table_order_sql() {
+    global $wpdb;
+    return "
+      CREATE TABLE IF NOT EXISTS {$wpdb->prefix}scrut_report_order(
+        id INT(11) PRIMARY KEY AUTO_INCREMENT,
+        name VARCHAR(100) NOT NULL,
+        email VARCHAR(100) NOT NULL,
+        phone_number VARCHAR(100) NOT NULL,
+        user_id INT(11) NOT NULL,
+        transaction_number VARCHAR(100) NOT NULL,
+        chassis_no INT(11) NOT NULL,
+        chassis_key TEXT NOT NULL,
+        created_at DATETIME NOT NULL,
+        state VARCHAR(50) NOT NULL DEFAULT 'unpaid',
+        price DECIMAL(10,2) NOT NULL,
+        payment_id VARCHAR(100) NULL,
+        payload_response LONGTEXT NULL,
+        report_data LONGTEXT NULL
+      );
+    ";
+  }
+
   public function activate() {
+    
+    global $wpdb;
+    $wpdb->query( $this->table_order_sql() );
+
 
     add_option( 'scrut_general_option', serialize([
-      'email' => null,
-      'api_key' => null,
+      'email' => '',
+      'api_key' => '',
       'report_price' => 50
     ]) );
 
@@ -80,6 +106,7 @@ class Scrut extends Ajax {
     add_action( 'admin_enqueue_scripts',  [$this, 'enqueue_assets_admin']);
     add_action( 'admin_bar_menu', [$this, 'admin_bar_menu'], 100);
     add_action( 'admin_enqueue_scripts',  [$this, 'enqueue_fancyapps_plugin']);
+    add_action( 'admin_post_scrut-payemnt-method-update', [$this, 'payment_method_update_post'] );
     add_action( 'init', [$this, 'add_roles'] );
     $this->register_ajax();
     
@@ -270,6 +297,7 @@ class Scrut extends Ajax {
 
   public function scrut_shortcode_checkout() {
     $data = $this->setting();
+    do_action('scrut_payment_gateway_response_callback');
     if(!$data) {
       die('<h1>Scrut Api Key not found</h1>');
     } else {
@@ -337,10 +365,37 @@ class Scrut extends Ajax {
 
       $current_user = wp_get_current_user();
 
-      echo json_encode($current_user, null, 4);
-
+      global $wpdb;
+      $wpdb->insert("{$wpdb->prefix}scrut_report_order", [
+        'name' => esc_html( trim($_POST['display_name']) ),
+        'email' => esc_html( trim($_POST['user_email']) ),
+        'phone_number' => esc_html( trim($_POST['phone_number']) ),
+        'user_id' => $current_user->ID,
+        'transaction_number' => 'scrut' . SPARATOR . date('ymd') . SPARATOR . rand(1111,9999),
+        'chassis_no' => esc_html( trim($_POST['chassis_no']) ),
+        'chassis_key' => esc_html( trim($_POST['chassis_key']) ),
+        'created_at' => date('Y-m-d h:i:s'),
+        'payment_id' => esc_html( trim($_POST['payment_id']) ),
+        'price' => $this->setting()->price
+      ], [ '%s', '%s', '%s', '%d', '%s', '%s', '%s', '%s', '%s', '%f', ]);
+      
+      do_action( 'scrut_report_order_payment_process', $wpdb->insert_id, esc_html( trim($_POST['payment_id']) ));
     }
     
+  }
+
+  public function payment_method_update_post() {
+    unset($_POST['action']);
+    $disabled = isset($_POST['disabled']) ? 'no' : 'yes';
+    unset($_POST['disabled']);
+    $params = array_merge($_POST, ['disabled' => $disabled]);
+    update_option('scrut_payment_method_' . $this->request('payment_id'), serialize($params));
+    $_SESSION['message'] = 'Peyment method has been updated';
+    $this->redirect( admin_url('admin.php?page=scrut_setting&tab=payment&section=form&payment_id=' . $this->request('payment_id')) );
+  }
+  
+  public function request($name, $default = null) {
+    return isset($_REQUEST[$name]) ? esc_html( trim($_REQUEST[$name]) ) : $default;
   }
 
   public function redirect($url) {
