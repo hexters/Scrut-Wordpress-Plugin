@@ -54,6 +54,24 @@ class Payment extends ScrutPaymentGateway {
         'class' => '',
         'required' => true,
       ],
+
+      'confirmation_phone_number' => [
+        'title' => __('Phone Confirmation', 'scrut'),
+        'type' => 'text',
+        'placeholder' => __('Phone Number Confirmation', 'scrut'),
+        'description' => '',
+        'class' => '',
+        'required' => true,
+      ],
+
+      'confirmation_email' => [
+        'title' => __('Email Confirmation', 'scrut'),
+        'type' => 'text',
+        'placeholder' => __('Email Confirmation', 'scrut'),
+        'description' => '',
+        'class' => '',
+        'required' => false,
+      ],
     ];
   }
 
@@ -73,6 +91,7 @@ class Payment extends ScrutPaymentGateway {
     
     $order = $this->orders->whereID($this->request('order_id'));
     require_once( SCRUT__PLUGIN_DIR . '/public/payment/bank_transfer_thank_you.php' );
+    
     exit();
   }
   

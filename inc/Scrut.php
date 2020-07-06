@@ -297,7 +297,9 @@ class Scrut extends Ajax {
 
   public function scrut_shortcode_checkout() {
     $data = $this->setting();
+    
     do_action('scrut_payment_gateway_response_callback');
+
     if(!$data) {
       die('<h1>Scrut Api Key not found</h1>');
     } else {
@@ -306,7 +308,8 @@ class Scrut extends Ajax {
         $chassis = json_decode($_SESSION['scrut_cart']);
       }
       require_once( SCRUT__PLUGIN_DIR . '/public/checkout.php');
-    }
+    }  
+    
   }
 
   public function scrut_shortcode_account() {
@@ -371,7 +374,7 @@ class Scrut extends Ajax {
         'email' => esc_html( trim($_POST['user_email']) ),
         'phone_number' => esc_html( trim($_POST['phone_number']) ),
         'user_id' => $current_user->ID,
-        'transaction_number' => 'scrut' . SPARATOR . date('ymd') . SPARATOR . rand(1111,9999),
+        'transaction_number' => 'SCRUT' . SPARATOR . date('ymd') . rand(1111,9999),
         'chassis_no' => esc_html( trim($_POST['chassis_no']) ),
         'chassis_key' => esc_html( trim($_POST['chassis_key']) ),
         'created_at' => date('Y-m-d h:i:s'),
