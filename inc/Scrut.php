@@ -393,6 +393,29 @@ class Scrut extends Ajax {
     unset($_POST['disabled']);
     $params = array_merge($_POST, ['disabled' => $disabled]);
     update_option('scrut_payment_method_' . $this->request('payment_id'), serialize($params));
+
+    // Get scrut_payment_methods
+    $options = (Array) unserialize(get_option('scrut_payment_methods', serialize([])));
+    if($disabled == 'yes') {
+      if(in_array($this->request('payment_id'),$options)) {
+        $opts = [];
+        foreach($options as $opt) {
+          if($this->request('payment_id') != $opt){
+            $opts[] = $opt;
+          }
+        }
+
+        update_option('scrut_payment_methods', serialize($opts));
+      }
+      
+    } else {
+      if(!in_array($this->request('payment_id'),$options)) {
+        $options[] = $this->request('payment_id');
+        update_option('scrut_payment_methods', serialize($options));
+      }
+      
+    }
+
     $_SESSION['message'] = 'Peyment method has been updated';
     $this->redirect( admin_url('admin.php?page=scrut_setting&tab=payment&section=form&payment_id=' . $this->request('payment_id')) );
   }

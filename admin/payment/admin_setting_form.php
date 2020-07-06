@@ -1,5 +1,6 @@
 <?php 
-  $option = unserialize(get_option('scrut_payment_method_' . $this->id, []));
+  $option = unserialize(get_option('scrut_payment_method_' . $this->id, serialize([])));
+  $options = (Array) unserialize(get_option('scrut_payment_methods', serialize([])));
 ?>
 
 <div>
@@ -20,7 +21,7 @@
           </th>
           <td>
             <input 
-              <?php echo (@$option['disabled'] == 'no') ? 'checked' : '' ?>
+              <?php echo (@$option['disabled'] == 'no') && in_array($this->id, $options) ? 'checked' : '' ?>
               value="<?php echo @$option[$key] ?>"
               type="<?php echo @$field['type'] ?>" 
               placeholder="<?php echo @$field['placeholder'] ?>" 
