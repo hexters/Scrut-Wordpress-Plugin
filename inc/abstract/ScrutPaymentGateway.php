@@ -7,6 +7,7 @@ abstract class ScrutPaymentGateway {
   public $description;
   public $thumbnail;
   public $orders;
+  public $actives = [];
 
   public static $UNPAID = 'unpaid';
   public static $PROCCESS = 'process';
@@ -25,7 +26,8 @@ abstract class ScrutPaymentGateway {
 
   public function __construct() {
     $this->orders = new ScrutOrder();
-
+    $this->actives = (Array) unserialize(get_option('scrut_payment_methods', serialize([])));
+    
     add_action( 'add_scrut_payment_gateway', [$this, 'add_scrut_payment_gateway'] );
     add_action( 'scrut_report_order_payment_process', [$this, 'current_proccess_payment'], 5, 2 );
     add_action( 'scrut_payment_gateway_response_callback', [$this, 'page_payment_callback_proccess'] );
@@ -38,6 +40,14 @@ abstract class ScrutPaymentGateway {
     $url = get_permalink( get_page_by_path( 'scrut-checkout' ) ) . '?' . $query;
     echo '<meta http-equiv="refresh" content="0;url=' . $url . '" />';
     exit();
+  }
+
+  public function settings($arg = null) {
+    $option = (Array) unserialize(get_option('scrut_payment_method_' . $this->id, serialize([])));
+    if($arg) {
+      return isset($option[$arg]) ? $option[$arg] : null;
+    }
+    return $option;
   }
 
   public function scrut_admin_setting_list() {

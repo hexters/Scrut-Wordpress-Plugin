@@ -22,6 +22,7 @@
 
   <p>Once you make a payment, Please confirm you payment to <a href="tel:<?php echo @$option['confirmation_phone_number'] ?>"><?php echo @$option['confirmation_phone_number'] ?></a> <?php echo isset($option['confirmation_email']) ? 'or ' . $option['confirmation_email'] : null ?></p>
   <hr>
+  <p>You can review you order from the <strong>"Order History"</strong> section on your Account Page by clicking link below.</p>
   <a href="<?php echo get_permalink( get_page_by_path( 'scrut-account' )) ?>"> Go to Account Page &rarr;</a>
 
 </div>

@@ -33,8 +33,30 @@
     .order-item {
       margin-bottom: 2rem;
     }
+
+    .scrut-paymnet-method-description{
+      display: none;
+      border-top: solid 1px rgba($color: #000000, $alpha: .08);
+      font-size: 80%;
+      background-color: rgba($color: #000000, $alpha: .05);
+      padding: 0 .5rem .5rem .5rem;
+    }
   }
   .btn-pay {
     background-color: #d2232a;
+  }
+
+  .scrut-expandable {
+    background: #fff;
+    overflow: hidden;
+    color: #000;   
+    line-height: 50px;
+  
+    transition: all .5s ease-in-out;
+    height: 0;
+   }
+   
+   .scrut-expandable:target {
+    height: 50px;
   }
 }

@@ -381,7 +381,8 @@ class Scrut extends Ajax {
         'payment_id' => esc_html( trim($_POST['payment_id']) ),
         'price' => $this->setting()->price
       ], [ '%s', '%s', '%s', '%d', '%s', '%s', '%s', '%s', '%s', '%f', ]);
-      
+
+      unset($_SESSION['scrut_cart']);
       do_action( 'scrut_report_order_payment_process', $wpdb->insert_id, esc_html( trim($_POST['payment_id']) ));
     }
     

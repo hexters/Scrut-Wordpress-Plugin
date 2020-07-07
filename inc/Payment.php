@@ -10,9 +10,7 @@ class Payment extends ScrutPaymentGateway {
 
     $this->id = 'bank_transfer';
     $this->title = 'Bank Transfer';
-    $this->description = 'You can buy report with bank transfer';
-    $this->thumbnail = plugins_url( '/assets/images/transfer.png', SCRUT__FILE );
-
+    $this->description = 'Take payments in person via BACS. More commonly known as direct bank/wire transfer';
   }
 
   public function init_form_fields() {
@@ -27,7 +25,7 @@ class Payment extends ScrutPaymentGateway {
         'required' => false,
         'default_value' => 'no'
       ],
-
+      
       'bank_name' => [
         'title' => __('Bank Name', 'scrut'),
         'type' => 'text',
@@ -71,6 +69,15 @@ class Payment extends ScrutPaymentGateway {
         'description' => '',
         'class' => '',
         'required' => false,
+      ],
+
+      'description' => [
+        'title' => __('Description', 'scrut'),
+        'type' => 'textarea',
+        'placeholder' => __('Description', 'scrut'),
+        'description' => '',
+        'class' => '',
+        'default_value' => 'Make your payment directly into our bank account. Please use your Order ID as the payment reference. Your order will not be accepted until the funds have cleared in our account.',
       ],
     ];
   }
