@@ -25,3 +25,8 @@
   </div>
   <div>Do you have an account, <a href="<?php echo get_permalink( get_page_by_path( 'scrut-account' ) ) ?>">Login?</a></div>
 <?php endif; ?>
+
+<div class="form-group">
+  <label for="customer_note">Note</label>
+  <textarea name="customer_note" id="customer_note" cols="30" rows="7"></textarea>
+</div>

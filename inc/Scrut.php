@@ -3,6 +3,8 @@
 
 namespace App;
 use App\Models\Setting;
+use App\Pagination;
+
 if(! session_id()) {
   session_start();
 }
@@ -29,6 +31,7 @@ class Scrut extends Ajax {
         created_at DATETIME NOT NULL,
         state VARCHAR(50) NOT NULL DEFAULT 'unpaid',
         price DECIMAL(10,2) NOT NULL,
+        customer_note VARCHAR(250) NULL,
         payment_id VARCHAR(100) NULL,
         payload_response LONGTEXT NULL,
         report_data LONGTEXT NULL
@@ -141,7 +144,7 @@ class Scrut extends Ajax {
     add_action( 'wp_ajax_nopriv_add_chart', [$this, 'add_chart'] );
     
   }
-
+  
   public function add_roles() {
     if(!wp_roles(  )->is('customer')) {
       add_role( 'customer', 'Customer', [] );
@@ -219,9 +222,24 @@ class Scrut extends Ajax {
   }
 
   public function add_parent_menu() {
+    global $wpdb;
+
     add_menu_page( __('Scrut', 'scrut'), __('Scrut', 'scrut'), null, 'scrut_menu', '', plugins_url( 'scrut/admin/assets/scrut.png' ), 30 );
-    add_submenu_page( 'scrut_menu', __('Order'), __('Order'), 'manage_options', 'scrut_order', [$this, 'order_view'], 1 );
     add_submenu_page( 'scrut_menu', __('My Report'), __('My Report'), 'manage_options', 'scrut_report', [$this, 'my_report_view'], 2 );
+    
+    /**
+     * Sub menu order
+     */
+    $title = __('Order Report');
+    $order = $wpdb->get_row("SELECT COUNT(id) AS total FROM {$wpdb->prefix}scrut_report_order WHERE state = 'unpaid';");
+    if($order->total > 0) {
+      $title .= ' <span class="awaiting-mod">' . $order->total . '</span>';
+    }
+    add_submenu_page( 'scrut_menu', __('Order Report'), $title, 'manage_options', 'scrut_order', [$this, 'order_view'], 1 );
+    /**
+     * End Sub menu order
+     */
+    
     add_submenu_page( 'scrut_menu', __('Scrut Setting'), __('Setting'), 'administrator', 'scrut_setting', [$this, 'setting_view'], 3 );
   }
 
@@ -282,6 +300,44 @@ class Scrut extends Ajax {
       $_SESSION['error'] = 'Please completed this data below!';
       $this->redirect(admin_url( 'admin.php?page=scrut_setting' ));
     } else {
+      $paginate = new Pagination;
+
+      global $wpdb;
+      $orderby = '';
+      $whereState = '';
+      if($this->request('state') && in_array($this->request('state'), ['unpaid', 'paid', 'cancel'])) {
+        $state = esc_html( trim($this->request('state')) );
+        $whereState = "AND state = '{$state}'";
+      }
+      if($this->request('order') && $this->request('short')){
+        $order = in_array($this->request('order'), [
+          'id', 'name', 'email', 'phone_number', 'transaction_number', 'chassis_no', 'created_at', 'state', 'price', 'payment_id'
+        ]);
+        $short = in_array($this->request('short'), ['asc', 'desc']);
+
+        if($order && $short) {
+          $orderby = "ORDER BY {$this->request('order')} {$this->request('short')}";
+        }
+      }
+
+      $orders = $wpdb->get_results("
+        SELECT 
+          a.*
+        FROM {$wpdb->prefix}scrut_report_order AS a 
+        WHERE id > 0
+        {$whereState}
+        {$orderby}
+        LIMIT {$paginate->getPerPage()}
+        OFFSET {$paginate->getOffset()};
+      ");
+      
+      $paginate->setTotal($wpdb->get_var("
+        SELECT 
+          COUNT(a.id)
+        FROM {$wpdb->prefix}scrut_report_order AS a 
+        WHERE id > 0;
+      "));
+      $paginate->setCurrentTotal(count($orders));
       require_once(SCRUT__PLUGIN_DIR . '/admin/order.php');
     }
   }
@@ -370,15 +426,16 @@ class Scrut extends Ajax {
 
       global $wpdb;
       $wpdb->insert("{$wpdb->prefix}scrut_report_order", [
-        'name' => esc_html( trim($_POST['display_name']) ),
-        'email' => esc_html( trim($_POST['user_email']) ),
-        'phone_number' => esc_html( trim($_POST['phone_number']) ),
+        'name' => $this->request('display_name'),
+        'email' => $this->request('user_email'),
+        'phone_number' => $this->request('phone_number'),
         'user_id' => $current_user->ID,
         'transaction_number' => 'SCRUT' . SPARATOR . date('ymd') . rand(1111,9999),
-        'chassis_no' => esc_html( trim($_POST['chassis_no']) ),
-        'chassis_key' => esc_html( trim($_POST['chassis_key']) ),
+        'chassis_no' => $this->request('chassis_no'),
+        'chassis_key' => $this->request('chassis_key'),
         'created_at' => date('Y-m-d h:i:s'),
-        'payment_id' => esc_html( trim($_POST['payment_id']) ),
+        'payment_id' => $this->request('payment_id'),
+        'customer_note' => $this->request('customer_note', null),
         'price' => $this->setting()->price
       ], [ '%s', '%s', '%s', '%d', '%s', '%s', '%s', '%s', '%s', '%f', ]);
 
@@ -428,6 +485,12 @@ class Scrut extends Ajax {
   public function redirect($url) {
     echo '<meta http-equiv="refresh" content="0;url=' . $url . '" />';
     exit();
+  }
+
+  public function pre_html($content) {
+    echo '<pre>';
+    echo $content;
+    echo '</pre>';
   }
   
 }
