@@ -26,13 +26,14 @@ class Scrut extends Ajax {
         phone_number VARCHAR(100) NOT NULL,
         user_id INT(11) NOT NULL,
         transaction_number VARCHAR(100) NOT NULL,
-        chassis_no INT(11) NOT NULL,
+        chassis_no VARCHAR(200) NOT NULL,
         chassis_key TEXT NOT NULL,
         created_at DATETIME NOT NULL,
         state VARCHAR(50) NOT NULL DEFAULT 'unpaid',
         price DECIMAL(10,2) NOT NULL,
         customer_note VARCHAR(250) NULL,
         payment_id VARCHAR(100) NULL,
+        payment_name VARCHAR(100) NULL,
         payload_response LONGTEXT NULL,
         report_data LONGTEXT NULL
       );
@@ -311,7 +312,7 @@ class Scrut extends Ajax {
       }
       if($this->request('order') && $this->request('short')){
         $order = in_array($this->request('order'), [
-          'id', 'name', 'email', 'phone_number', 'transaction_number', 'chassis_no', 'created_at', 'state', 'price', 'payment_id'
+          'id', 'name', 'email', 'phone_number', 'transaction_number', 'chassis_no', 'created_at', 'state', 'price', 'payment_id', 'payment_name'
         ]);
         $short = in_array($this->request('short'), ['asc', 'desc']);
 
@@ -338,6 +339,9 @@ class Scrut extends Ajax {
         WHERE id > 0;
       "));
       $paginate->setCurrentTotal(count($orders));
+
+
+      $detail = new \ScrutOrder();
       require_once(SCRUT__PLUGIN_DIR . '/admin/order.php');
     }
   }
@@ -423,21 +427,23 @@ class Scrut extends Ajax {
       }
 
       $current_user = wp_get_current_user();
-
+      $payment_method_name = isset($_POST['payment_name'][$this->request('payment_id')]) ? $_POST['payment_name'][$this->request('payment_id')] : '-';
+      
       global $wpdb;
       $wpdb->insert("{$wpdb->prefix}scrut_report_order", [
-        'name' => $this->request('display_name'),
-        'email' => $this->request('user_email'),
-        'phone_number' => $this->request('phone_number'),
-        'user_id' => $current_user->ID,
-        'transaction_number' => 'SCRUT' . SPARATOR . date('ymd') . rand(1111,9999),
-        'chassis_no' => $this->request('chassis_no'),
-        'chassis_key' => $this->request('chassis_key'),
-        'created_at' => date('Y-m-d h:i:s'),
-        'payment_id' => $this->request('payment_id'),
-        'customer_note' => $this->request('customer_note', null),
-        'price' => $this->setting()->price
-      ], [ '%s', '%s', '%s', '%d', '%s', '%s', '%s', '%s', '%s', '%f', ]);
+        'name' => $this->request('display_name'), // s
+        'email' => $this->request('user_email'), // s
+        'phone_number' => $this->request('phone_number'), //s
+        'user_id' => $current_user->ID, // d
+        'transaction_number' => 'SCRUT' . SPARATOR . date('ym') . rand(1111,9999), // s
+        'chassis_no' => $this->request('chassis_no'), // s
+        'chassis_key' => $this->request('chassis_key'), // s
+        'created_at' => date('Y-m-d h:i:s'), // s
+        'payment_id' => $this->request('payment_id'), // s
+        'payment_name' => $payment_method_name, // s
+        'customer_note' => $this->request('customer_note', null), // s
+        'price' => $this->setting()->price // f
+      ], [ '%s', '%s', '%s', '%d', '%s', '%s', '%s', '%s', '%s', '%s', '%f', ]);
 
       unset($_SESSION['scrut_cart']);
       do_action( 'scrut_report_order_payment_process', $wpdb->insert_id, esc_html( trim($_POST['payment_id']) ));

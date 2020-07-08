@@ -5,6 +5,7 @@
   <tr>
     <td width="20%" valign="middle" style="text-align:center;">
       <input type="radio" data-scrut="payment-method" name="payment_id" value="<?php echo $id ?>" id="payment_<?php echo $id ?>" required>
+      <input type="hidden" name="payment_name[<?php echo $id ?>]" value="<?php echo $title ?>" required>
     </td>
     <td>
       <label for="payment_<?php echo $id ?>">

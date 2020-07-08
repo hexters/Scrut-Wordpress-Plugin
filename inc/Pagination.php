@@ -65,6 +65,35 @@ class Pagination {
       require_once( $path );
     }
   }
+
+  public function head($field, $name) {
+    $params = [];
+    foreach($_GET as $key => $param) {
+      if(!($key == 'order') && !($key == 'short')) {
+        $params[$key] = $param;
+      }
+    }
+
+    $short = $this->request('short', 'asc') == 'asc' ? 'desc' : 'asc';
+    $params = array_merge($params, [
+      'order' => $field,
+      'short' => $short
+    ]);
+    $result_params = count($params) > 0 ? '?' . http_build_query($params) : null;
+    $link = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+    $uri = explode('?', $link);
+    $target = $uri[0] .  $result_params;
+
+    $html = '<a href="' . $target . '">';
+    $html .= '<span>' . $name . '</span>';
+    $html .= '<span class="sorting-indicator"></span>';
+    $html .= '</a>';
+    return $html;
+  }
+
+  public function getShort($field) {
+    return $this->request('short', 'asc') && $this->request('order') == $field ? $this->request('short', 'asc') : '';
+  }
   
   //
 

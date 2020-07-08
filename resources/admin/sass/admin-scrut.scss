@@ -1,44 +1,5 @@
 .scrut {
-  .text-red {
-    color: red;
-  }
-  .text-center {
-    text-align: center;
-  }
-  .text-left {
-    text-align: left;
-  }
-  .text-right {
-    text-align: right;
-  }
-  table.payment-table-setting {
-    width: 100%;
-  }
-
-  .scrut-pagination {
-    display: inline-block;
-    ul {
-      list-style-type: none;
-      display: inline-block;
-      margin: 0;
-      li {
-        display: inline;
-        a, span {
-          padding: .5rem;
-          background-color: white;
-          margin: .3rem;
-          display: inline-block;
-          text-decoration: none;
-          color: #888888;
-        }
-        &.current-page {
-          a {
-            background-color: rgba($color: #000000, $alpha: .08);
-          }
-        }
-      }
-    }
-  }
-  
+  @import "./_partials/bootstrap-grid";
+  @import "./_partials/core";
 }
 
